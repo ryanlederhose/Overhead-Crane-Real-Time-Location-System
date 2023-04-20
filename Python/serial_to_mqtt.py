@@ -1,18 +1,19 @@
 '''
 This python script will read data over the specified serial port
-at baudrate and parse the data to store into an database file
+at baudrate and parse the data to store into an excel spreadsheet
     @param -b baudrate
     @param -p com port
-    @param -d database file
+    @param -t mqtt topic
 '''
 
 import serial
 from datetime import datetime
 import time as tick
-import sqlite3 as sql
+import paho.mqtt.client as mqtt
+import json
+import sys
 import numpy as np
 from sklearn.linear_model import LinearRegression
-import sys
 
 '''
     @brief entry point into program
@@ -20,20 +21,19 @@ import sys
 def main():
 
     global ser
-    global con
-    global cur
+    global client
+    global topic
 
     com_port = ""
     baudrate = 0
-    database = ""
 
     for i in range(len(sys.argv)):
         if sys.argv[i] == '-b':
             baudrate = int(sys.argv[i + 1])
         elif sys.argv[i] == '-p':
             com_port = sys.argv[i + 1]
-        elif sys.argv[i] == '-d':
-            database = sys.argv[i + 1]
+        elif sys.argv[i] == '-t':
+            topic = sys.argv[i + 1]
 
     #Open serial port
     try:
@@ -42,18 +42,32 @@ def main():
     except serial.SerialException:
         print("COULD NOT OPEN SERIAL PORT")
         return -1
-
-    try:
-        con = sql.connect(database=database)
-        cur = con.cursor()
-        cur.execute("CREATE TABLE crane3(time, adc, average mass, mass, x pos, y pos)")
-    except sql.OperationalError:
-        print("SOMETHING HAPPENED")
     
-    read_serial()   
+    #Initialise mqtt client
+    client = mqtt.Client(client_id="CRANE_3",
+                            transport="tcp")
+    
+    #Set password for mqtt
+    client.username_pw_set(username="ryan", password="ryan")
+
+    #Set callbacks for connect and publish
+    client.on_connect = on_connect
+    client.on_publish = on_publish
+
+    #Connect to mqtt broker
+    client.connect(host="acavcon01.otbsl.com", port = 1883, keepalive=10)
+
+    #Start client loop 
+    client.loop_start()
+    tick.sleep(4)
+    print("Client Connection Status:", client.is_connected())
+
+    read_serial()   #start loop
 
 ''' 
-    @brief read data over the serial port to store in an db file
+    This function is used to read data over the serial port
+    and parse this data so it is easily sent and deciphered
+    over mqtt
 '''
 def read_serial():
 
@@ -63,20 +77,20 @@ def read_serial():
     data = ""
     tickCount = tick.time()
     global ser
-    global con
-    global cur
+    global client
     count = 1
     readyToSend = False
-    jsonList = []
     craneID = 0
     waitingFlag = 0
     rawAdc = 0
-    posX = 0
-    posY = 0
     weightList = []
 
+    jsonList1 = []
+    jsonList2 = []
+    jsonList3 = []
+
     # create example data
-    x = np.array([657, 1282, 1639, 1884, 2077, 2229, 2370, 3808]).reshape((-1, 1))
+    x = np.array([670, 1282, 1639, 1884, 2077, 2229, 2370, 3808]).reshape((-1, 1))
     y = np.array([0, 1.488, 2.466, 2.97, 3.168, 3.568, 3.762, 6.9])
 
     # create linear regression object
@@ -87,7 +101,7 @@ def read_serial():
 
     #Enter loop
     while True:
-        
+
         #Try to read serial port
         try:
             c = ser.read().decode('utf-8')
@@ -119,6 +133,10 @@ def read_serial():
                     elif (dataList[i])[0] == 'k':
                         posX = -1
                         posY = -1
+                        waitingFlag = 1
+                        continue
+                if (waitingFlag == 0):                        
+                    continue    #incomplete packet, ignore
 
             #extract variables from message
             for i in range(len(dataList)):
@@ -146,13 +164,73 @@ def read_serial():
             for i in range(len(weightList)):
                 averageTrueMass += weightList[i]
             averageTrueMass = float(averageTrueMass / len(weightList))
-            
-            cur.execute("INSERT INTO crane3 VALUES ('" + str(now) + "', '" +  
-                        str(rawAdc) + "', '" + str(averageTrueMass) + "', '" + 
-                        str(trueMass) + "', '" + str(posX) + "', '" + str(posY) + "')")
-            con.commit()
 
+            #set dictionary with updated variables
+            updateData = {
+                "a": int(rawAdc),
+                "m": float(averageTrueMass),
+                "x": int(posX),
+                "y": int(posY),
+                "t": str(now)
+            }
+
+            #check crane id and send appropriate data
+            if craneID == "3":
+                jsonList1.append(updateData)
+                if len(jsonList1) == 10:
+                    send_data(craneID="3", jsonList=jsonList1)
+                    count = 1
+                    jsonList1.clear()
+
+            #increment count and reset buffer
+            count += 1
             rxBuffer = ""
+
+'''
+    @brief format the time variable as a string
+    @param updateData updated data from serial
+    @return updateData
+'''
+def _format_time_as_string(updateData):
+    updateData["t"] = str(updateData["t"])
+    return updateData
+
+'''
+    @brief callback for mqtt connection attempt
+    @param client mqtt client
+    @param userdata user data of mqtt
+    @param flags response flags
+    @param rc return code
+'''
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected OK, Returned code=", rc)
+    else:
+        print("Bad connection, Returned code=", rc)
+
+'''
+    @brief callback for successful mqtt publish
+    @param client mqtt client
+    @param userdata user data of mqtt
+    @param mid message id
+'''
+def on_publish(client, userdata, mid):
+    print("\r\nMessage Published\r\n")
+    pass
+
+'''
+    @brief send the json package over mqtt
+    @param craneID id of crane data
+    @param jsonList json package containing data
+'''
+def send_data(craneID, jsonList):
+    global topic
+
+    jsonList = [_format_time_as_string(x) for x in jsonList]
+    jsonPackage = json.dumps({
+                        "id": int(craneID),
+                        "updates": jsonList})
+    client.publish(topic, jsonPackage)
 
 # run application
 if __name__ == "__main__":
