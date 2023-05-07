@@ -7,15 +7,14 @@ at baudrate and parse the data to store into an excel spreadsheet
 '''
 import serial
 from datetime import datetime
-import time as tick
 import openpyxl
-from matplotlib import pyplot
-from matplotlib.animation import FuncAnimation
-from random import randrange
 import numpy as np
 from sklearn.linear_model import LinearRegression
-import statistics as stat
+from sklearn.neighbors import KNeighborsRegressor
 import sys
+import pandas as pd
+
+MAX_READS = 20
 
 '''
     @brief entry point into program
@@ -35,7 +34,7 @@ def main():
         elif sys.argv[i] == '-p':
             com_port = sys.argv[i + 1]
         elif sys.argv[i] == '-e':
-            spreadsheet = sys.argv[i + 1]
+            spreadsheet = 'Training Data/'  + sys.argv[i + 1] + '.xlsx'
 
     #Open serial port
     try:
@@ -52,7 +51,6 @@ def main():
     except FileNotFoundError:
         wb = openpyxl.Workbook()
         create_sheet('Crane 3', wb)
-        create_sheet('Crane 17', wb)
         wb.save(filename=spreadsheet)
         wb.close()
 
@@ -63,36 +61,26 @@ def main():
 '''
 def read_serial():
 
-    #Initialise variables
-    readFlag = False
-    rxBuffer = ""
-    data = ""
-    tickCount = tick.time()
+    #Global variables
     global ser
     global client
     global spreadsheet
-    count = 1
-    readyToSend = False
-    jsonList = []
+
+    #Local variables
+    readFlag = False
+    rxBuffer = ""
     craneID = 0
     waitingFlag = 0
     rawAdc = 0
-
     weightList = []
-
     reads = 0
 
-    # create example data
-    x = np.array([670, 1282, 1639, 1884, 2077, 2229, 2370, 3808]).reshape((-1, 1))
-    y = np.array([0, 1.488, 2.466, 2.97, 3.168, 3.568, 3.762, 6.9])
-
-    # create linear regression object
+    #Create linear regression model
+    training_data = pd.read_csv("Training Data/training_data.csv")  #read data
+    X_train = training_data.iloc[:, :-1]
+    y_train = training_data.iloc[:, -1]
     model = LinearRegression()
-
-    # fit the model to the data
-    model.fit(x, y)
-
-    variance = 0
+    model.fit(X_train, y_train)
 
     #Enter loop
     while True:
@@ -135,8 +123,8 @@ def read_serial():
 
             #extract variables from message
             for i in range(len(dataList)):
-                if (dataList[i])[0] == 'i':
-                    craneID = (dataList[i])[1::]
+                if (dataList[i])[0] == '\x16':
+                    craneID = (dataList[i])[2:3:]
                 elif (dataList[i])[0] == 'm':
                     rawAdc = (dataList[i])[1::]
                 elif (dataList[i])[0] == 'x':
@@ -151,7 +139,7 @@ def read_serial():
             crane3Worksheet = wb.__getitem__("Crane 3")
 
             #predict the mass of the coil based on the adc reading
-            trueMass = model.predict(np.array([int(rawAdc)]).reshape(-1, 1))
+            trueMass = model.predict(pd.DataFrame({'adc': [int(rawAdc)]}))
 
             #put the calculated mass into a buffer of latest fifteen values
             weightList.insert(0, float(trueMass))
@@ -165,15 +153,20 @@ def read_serial():
             averageTrueMass = float(averageTrueMass / len(weightList))
 
             #append data
-            excelList = [str(now), str(rawAdc), str(float(averageTrueMass)), str(posX), str(posY)]
+            excelList = [str(now), int(rawAdc), float(trueMass), int(posX), int(posY)]
             crane3Worksheet.append(excelList)
-            reads += 1
+            reads = reads + 1
             
             #save and close file
             wb.save(filename=spreadsheet)      
             wb.close()
 
             rxBuffer = ""   #reset buffer
+
+            print(rawAdc, trueMass)
+
+            if reads == MAX_READS:
+                return
             
 '''
     @brief create the excel spreadsheet in which to store data into
