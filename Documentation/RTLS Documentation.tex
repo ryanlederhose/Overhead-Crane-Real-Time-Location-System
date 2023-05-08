@@ -2,13 +2,16 @@
 \title{Overhead Crane 2-Axis Positioning}
 \author{Ryan Lederhose}
 \date{May 2023}
-\usepackage{graphicx, adjustbox, lipsum, float, amsmath}
+\usepackage{graphicx, adjustbox, lipsum, float, amsmath, array, listings, csvsimple, booktabs}
 \graphicspath{{./images/}}
 
 \begin{document}
+
 \maketitle
+\thispagestyle{empty}
 
 \newpage
+\thispagestyle{empty}
 
 \begin{abstract}
 ABSTRACT
@@ -16,27 +19,48 @@ ABSTRACT
 
 \newpage
 
+
 \tableofcontents
+\thispagestyle{empty}
 
 \newpage
 
+\thispagestyle{empty}
+\listoffigures
+\listoftables
+
+\newpage
+
+\pagenumbering{arabic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                       INTRODUCTION                        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 The main aim of this project is to develop a functioning prototype for Bluescope Steel Acacia Ridge to assist in auditing the travel path and lift rating of overhead cranes. 
 \subsection{Motivation}
-It has long been identified that human error is the leading cause of incidents in the workplace and thus Bluescope has always prioritised the health and safety of its workers. Bluescope Acacia Ridge has six overhead cranes on-site which are used by the operators to move steel coils. The overhead cranes pose a safety risk to the operators, and with the correct data, it is possible to introduce safety measures that would lower the risk to operators in the field.
+It has long been identified that human error is the leading cause of incidents in the workplace and thus Bluescope has always prioritised the health and safety of its workers. 
+Bluescope Acacia Ridge has six overhead cranes on-site which are used by the operators to move steel coils. The overhead cranes pose a safety risk to the operators, 
+and with the correct data, it is possible to introduce safety measures that would lower the risk to operators in the field.
 \subsection{Background}
-Bluescope have provided a real-time location system (RTLS) solution from Pozyx. The software development kit (SDK) uses anchors (stationary transceivers) to aid in positioning one or more tags (non-stationary transceivers) in a given area. Bluescope believe that with the provided software development kit, the real-time position of the overhead cranes can be captured at regular intervals. Furthermore, by integrating the real-time position with the hook weight, Bluescope can develop a heat map of the warehouse floor, indicating heavy traffic areas so appropriate measures can be introduced to reduce risks.
+Bluescope have provided a real-time location system (RTLS) solution from Pozyx. The software development kit (SDK) uses anchors (stationary transceivers) 
+to aid in positioning one or more tags (non-stationary transceivers) in a given area. Bluescope believe that with the provided software development kit, the 
+real-time position of the overhead cranes can be captured at regular intervals. Furthermore, by integrating the real-time position with the hook weight, 
+Bluescope can develop a heat map of the warehouse floor, indicating heavy traffic areas so appropriate measures can be introduced to reduce risks.
 \subsubsection{Pozyx RTLS Solution}
-The provided software development kit uses stationary transceivers, hereafter referred to as anchors, to accurately position the location of non-stationary transceivers, hereafter referred to as tags. The SDK uses a positioning protocol known as Two-way-ranging (TWR).
+The provided software development kit uses stationary transceivers, hereafter referred to as anchors, to accurately position the location of non-stationary 
+transceivers, hereafter referred to as tags. The SDK uses a positioning protocol known as Two-way-ranging (TWR).
 
-In TWR, the distance from a tag to an anchor is measured by sending a data packet between the two transceivers. By measuring how long it took for the packet to return, the tag can estimate the distance to the anchor. If the tag has ranged with at least three anchors, it can compute its position in the given area through trilateration [2]. This consequently means the coordinates of all anchors must be known prior to positioning.
+In TWR, the distance from a tag to an anchor is measured by sending a data packet between the two transceivers. By measuring how long it took for the 
+packet to return, the tag can estimate the distance to the anchor. If the tag has ranged with at least three anchors, it can compute its position in the 
+given area through trilateration [2]. This consequently means the coordinates of all anchors must be known prior to positioning.
 
-In this particular solution, one master tag instructs one or more remote tags to position themselves through the anchors. This master tag is connected to a computer or microcontroller which in turn retrieves the position from all the remote tags. Alternatively, it is possible to position the master tag itself, however, this does not scale well to large areas [2].
+In this particular solution, one master tag instructs one or more remote tags to position themselves through the anchors. This master tag is 
+connected to a computer or microcontroller which in turn retrieves the position from all the remote tags. Alternatively, it is possible to position 
+the master tag itself, however, this does not scale well to large areas [2].
 
-The anchors and tags communicate between each other through ultra-wideband (UWB) technology. UWB is a shortrange, very high frequency, wireless communication protocol that uses radio waves [1]. Consequently, UWB has problems transmitting through walls and is heavily interfered by surrounding metal. It ultimately works best if there is a clear line-of-sight between transmitter and receiver. 
+The anchors and tags communicate between each other through ultra-wideband (UWB) technology. UWB is a shortrange, very high frequency, wireless 
+communication protocol that uses radio waves [1]. Consequently, UWB has problems transmitting through walls and is heavily interfered by surrounding metal. 
+It ultimately works best if there is a clear line-of-sight between transmitter and receiver. 
 
 UWB provides a low spectral density and wide bandwidth solution to wireless communication as such:
 \begin{figure}[h]
@@ -53,7 +77,9 @@ UWB features are highlighted below: [1]
     \item UWB enables high data rates over short distances
     \item Low spectral density ensures low probability of signal detection and consequently increases security of connection
 \end{itemize}
-The Pozyx RTLS solution has four anchors and six tags, with one of these tags serving as a master tag. The master tag talks to its host device either through a serial port or an I2C connection. Pozyx claim the solution is 10cm accurate with a 60Hz update rate locally, or up to 45Hz remotely. The range of the transceivers is 30m, with Pozyx suggesting four anchors can cover a space of $400 – 800m^2$. They additionally advise a few rules be followed when placing the anchors:
+The Pozyx RTLS solution has four anchors and six tags, with one of these tags serving as a master tag. The master tag talks to its host device either through 
+a serial port or an I2C connection. Pozyx claim the solution is 10cm accurate with a 60Hz update rate locally, or up to 45Hz remotely. The range of the 
+transceivers is 30m, with Pozyx suggesting four anchors can cover a space of $400 – 800m^2$. They additionally advise a few rules be followed when placing the anchors:
 \begin{enumerate}
     \item Place the anchors high and in line-of-sight of the user
     \item Spread the anchors around the user, never place them in a straight line
@@ -62,9 +88,12 @@ The Pozyx RTLS solution has four anchors and six tags, with one of these tags se
 \end{enumerate}
 
 \subsubsection{IEEE 802.15.4}
-IEEE 802.15 is a working group of the IEEE 802 standards committee which specifies wireless personal area network (WPAN) standards. More specifically, IEEE 802.15.4 specifies the physical layer (PHY) and media access control (MAC) layer of the Open Systems Interconnection (OSI) model of network operation.
+IEEE 802.15 is a working group of the IEEE 802 standards committee which specifies wireless personal area network (WPAN) standards. More specifically, 
+IEEE 802.15.4 specifies the physical layer (PHY) and media access control (MAC) layer of the Open Systems Interconnection (OSI) model of network operation.
 
-The physical layer defines the power modulation, frequency and other wireless conditions of the link whereas the MAC layer defines the format of the data handling [5]. The standard provides a basis to which other features could be added through the upper layers. Zigbee is the most common enhancement of the 802.15.4 standard [5]. 
+The physical layer defines the power modulation, frequency and other wireless conditions of the link whereas the MAC layer defines the format of the 
+data handling [5]. The standard provides a basis to which other features could be added through the upper layers. Zigbee is the most common enhancement 
+of the 802.15.4 standard [5]. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\textwidth]{osi model.png}
@@ -72,11 +101,15 @@ The physical layer defines the power modulation, frequency and other wireless co
     \label{fig:osi_model}
 \end{figure}
 \newline
-Zigbee is a mesh network protocol, which means that devices can communicate directly with each other, or they can relay messages through other devices in the network. This allows Zigbee devices to create a self-healing network that can continue to function even if some devices are out of range or out of power. There are three classes of Zigbee devices:
+Zigbee is a mesh network protocol, which means that devices can communicate directly with each other, or they can relay messages through other 
+devices in the network. This allows Zigbee devices to create a self-healing network that can continue to function even if some devices are out of range or 
+out of power. There are three classes of Zigbee devices:
 \begin{itemize}
-    \item Zigbee Coordinator: The coordinator forms the root of the network tree. There is always precisely one coordinator in each network since it is the device that started the network originally
+    \item Zigbee Coordinator: The coordinator forms the root of the network tree. There is always precisely one coordinator in each network since it is 
+    the device that started the network originally
     \item Zigbee Router: Routers can both run an application function and pass data on to other devices
-    \item Zigbee End Device: Contains just enough functionality to talk to a router or coordinator. These devices cannot relay data and simply run an application function, fetching data and transmitting it into the mesh network
+    \item Zigbee End Device: Contains just enough functionality to talk to a router or coordinator. These devices cannot relay data and simply run 
+    an application function, fetching data and transmitting it into the mesh network
 \end{itemize}
 One of the key features of Zigbee is its low power consumption. Zigbee devices can run for several years on a single battery, 
 making it well suited for use in remote or hard-to-reach locations. Additionally, Zigbee devices can operate in both sleep and 
@@ -189,29 +222,44 @@ master tag are as described in Figure \ref{fig:nuc_tag_cct}.
     \caption{NucleoL432KC Board to Master Tag Schematic}
     \label{fig:nuc_tag_cct}
 \end{figure}
-\subsubsection{Positioning Accuracy}
-Pozyx offers a range of customisation options for the positioning system. The \textit{POZYX\_POS\_FILTER}
-register offers the programmer options for configuring positioning filters by the device. The register offers four filter options: none, FIR, moving 
-average and moving median. Additionally, the device allows the user to configure the strength of the filter; a value between 0 and 15 indicating 
-the number of samples the position will be delayed by. Moreover, the \textit{POZYX\_POS\_ALG}
-register will allow the programmer to configure the dimension and algorithm used by the position function. 
-Dimensions available are 2D, 2.5D and 3D; however, the scope only requires and x-y position hence, 2D is the logical option. 
-Algorithms available are UWB and Tracking; however, tracking is only available for 3D positioning hence, UWB is the only option. 
-
+\subsection{Positioning Accuracy}
+The Pozyx Creator SDK offers the programmer a range of customisation options for the positioning system. These are listed below:
+\begin{itemize}
+    \item Filter Options:
+    \begin{itemize}
+        \item None 
+        \item Finite Impulse Response
+        \item Moving Average
+        \item Moving Median
+    \end{itemize}
+    \item Filter Strength : 1 - 15. Number of samples the position will be delayed by
+    \item Position Dimension: 2D, 2.5D, 3D 
+    \item Position Algorithms:
+    \begin{itemize}
+        \item UWB
+        \item Tracking
+    \end{itemize}   
+\end{itemize}
+The positioning dimension is logically 2D as the scope only requires a x-y position. Hence, the positioning algorithm must be UWB, as 
+tracking is only available in 3D positioning.
+\subsubsection{Positioning Accuracy Tests}
 For an initial test four anchors were used, each attached to a seperate pillar 2.5m above the ground in the arrangment described by Figure \ref{fig:setup1}.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{setup1.png}
+    \includegraphics[width=0.5\textwidth]{setup1.png}
     \caption{21.86m x 7.6m Anchor Setup}
     \label{fig:setup1}
 \end{figure}
-In this arrangment, the anchors cover an area of $166.136m^2$, which falls in the recommended range for anchor placement by Pozyx. 
+In this arrangment, the anchors cover an area of $166.136m^2$. 
 It was understood that the metal pillars would interfere with the anchor-tag transmission, however, at such short range, 
-the effects were considered negligible. The \textit{POZYX\_POS\_FILTER} register was customised such that a moving 
-average filter set to a strength of 10 was configured for positioning to allow for a smooth trajectory and a high sample rate. It should be 
-noted that during this test the update rate was not considered to be a variable worth testing.
+the effects were considered negligible. 
 
-For this test, the master tag was positioned in a known location and the position calculated by the tag is compared to the actual value. The results are described in Table \ref{tab:res1}.
+The positioning filter was customised to a moving average filter with a strength of 10 to facilitate a smooth trajectory
+and a high sample rate; however, it should be noted that during this test the update rate was not considered to be a variable worth testing.
+
+For this test, the master tag was positioned in a known location and the position calculated, which is an
+average over 10 results, is compared to the actual value. 
+The results are described in Table \ref{tab:res1}.
 \begin{center}
     \begin{table}[h]
         \begin{adjustbox}{width=1\textwidth, center=\textwidth}
@@ -234,15 +282,16 @@ For this test, the master tag was positioned in a known location and the positio
         \label{tab:res1}
     \end{table}
 \end{center}
-The results show that within the designated test area, the master tag was able to position itself accurately on the ground floor with an error
-$\leq$1\%. As the results were promising, the test area was widened to a 15.2m x 21.86m area as such:
+Inherently, the \textit{Acutal Position} will hold some error. Taking this into account, the average percent error calculated over the test result,
+$0.495\%$, shows the positioning of the Pozyx SDK holds high accuracy and precision within the designated test area.
+The test area was then widened to see if the same accuracy and precision holds.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{setup2.png}
+    \includegraphics[width=0.5\textwidth]{setup2.png}
     \caption{21.86m x 15.2m Anchor Setup}
 \end{figure}
-For this test, the master tag was no longer going to be performing position, but rather a remote tag, simulating a more realistic condition closer to that
-of the final product. The results are shown below:
+This test introduces a remote tag to perform the positioning, to simulate an environment closer to that of the final product. The results are
+shown below:
 \begin{center}
     \begin{table}[h]
         \begin{adjustbox}{width=1\textwidth, center=\textwidth}
@@ -265,16 +314,47 @@ of the final product. The results are shown below:
         \label{tab:res2}
     \end{table}
 \end{center}
-Expanding the test area evidently increased the percentage error in the results. The scope of the project requires a metre-by-metre map
+Expanding the test area evidently increased the percentage error in the results. This can be accounted for by the increased distance between 
+the remote tag and the anchors. With the displacement increased, the UWB signals sent between each anchor the remote tag have a greater distance to cover.
+This results in the signal experiencing greater interference. It was touched on before, that the testing area is home to a large number of steel coils. 
+These coils will interfere with the UWB communication, increasing the time it takes for the signal to reach its destination. As the Pozyx positioning
+protocol is based on TWR, as described before, this impacts the calculated position by the remote tag, hence why when the testing area is enlarged,
+the percentage error between theoretical and actual results is increased.
+
+The scope of the project requires a metre-by-metre map
 of the travel path of the crane. Hence, variances in positions of up to 0.5m can be ignored and ultimately not affect the outcome
 meaningfully. Thus, the increase in percentage error for this test can be considered insignificant.
 
-An observation made during this test is that the connection between the remote tag and master tag would experience interference
-intermittently, with it being prevalent when the remote tag was taken into the rows of coils north of Bay 3. Unfortunately, interference,
-is an inherit issue that was encountered, especiialy in the test area. The area has a number of steel coils always present. The metal interrupts
-the UWB signal through blocking line-of-sight and diminishing the strength of the signal. The interference issues encountered demonstrate
-how essential line-of-sight is in UWB transmission and how it must be prioritised when designing the final layout and prototype 
-of the system.
+\subsection{Positioning Update Rate}
+The rate at which the system updates it positions should be fast enough such that a new position is calculated for every metre by the crane moves.
+It should be such that at least two samples are taken for every metre. This satisfies the Nyquist criterion which requires that the sampling frequency
+be at least twice the highest frequency contained in the signal, which in this case is the highest velocity the crane can travel. From Table \ref{tab:crane_3_specs}, the
+long travel speed of Crane 3 is 1.08m/s at full speed (no load). Thus, accounting for disturbances, an update rate of 3Hz is sufficient.
+
+To test this, a 3Hz update rate was implemented and the remote tag was walked around the test area as described in Figure 
+\ref{tab:res2}. The results are as followed:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{update1.png}
+    \caption{3Hz Positioning Update Rate Test}
+    \label{fig:3hz}
+\end{figure}
+Figure \ref{fig:3hz} shows that a 3Hz update rate maps the movement of the remote tag into a metre-by-metre map of the test floor. It is noticeable
+that the number of samples when travelling along the boundary of the x-axis is less than that when travelling along the y-axis boundary. This is not consistent 
+when travelling along the x-axis closer to the centre of the test area. Geometrically, the centre of the x-axis boundary is cumulatively the furtherst
+point away from all the anchors (i.e. sum of distance to all anchors is greatest at this point). Thus, the decrease in number of samples could be accounted
+for by the increased distance to the anchors at this point. To account for this, the update rate was increased to 3.5Hz and the same test was conducted. The
+results are as followed:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{update2.png}
+    \label{fig:3.5hz}
+    \caption{3.5Hz Positioning Update Rate Test}
+\end{figure}
+The results of this test are much improved. There appears to be no significant decrease in the number of samples taken per metre anywhere across the floor.
+From these results, it can be said the 3.5Hz update rate is sufficient to track the crane to a metre-by-metre area.
+
+
 
 
 \newpage
@@ -434,12 +514,12 @@ leads to the following schematic:
     \caption{ADC Circuit Schematic}
     \label{fig:adc_schem}
 \end{figure}
-\subsection{ADC Circuit Test}
+\subsection{ADC Circuit Test} \label{sec:adc_test}
 The ADC circuit in Figure \ref{fig:adc_schem} was tested using the Portacal 1000 to supply a 0-10V analog signal. The output from the buffer
 amplifier was wired into a single-ended ADC input on the NucleoL432KC board. The analog signal was converted by the STM32,
 and the digital result was pushed out to a serial port. The results from the test are as followed:
 \begin{center}
-    \begin{table}[h]
+    \begin{table}[H]
         \begin{adjustbox}{width=0.7\textwidth, center=\textwidth}
             \small
             \begin{tabular}{||c c c c c c||}
@@ -454,6 +534,8 @@ and the digital result was pushed out to a serial port. The results from the tes
         \label{tab:res3}
     \end{table}
 \end{center}
+It should be noted that the raw ADC strain of each input is an average of 20 results. The variance of these results were
+consistently $\leq1$.
 \subsubsection{Regression Analysis}
 Plotting the data in Table \ref{tab:res3} and performing a regression analysis using the sklearn.linear\_regression.LinearRegression library yields the following
 result:
@@ -467,8 +549,12 @@ result:
     Predicted Function: $y=405.55x-167.7$; 
     Sum Squared Errors: $SSE=505$
 \end{center}
-The results of the regression analysis indicate the relationship between the ADC strain and voltage is linearly proportional, with the linear regression
-model able to predict ADC strains with little error. The accuracy of the model indicates that a similar process can be used to calculate the hook weight.
+According to the results of the regression analysis, there appears to be a linearly proportional relationship between ADC strain and voltage. 
+Furthermore, the linear regression model used in the analysis was found to have a high level of accuracy, as it was able to predict ADC strains with little error.
+While the SSE value of 505 may seem high initially, it is important to consider the magnitude of the ADC strain in order to interpret the SSE value. 
+In this case, when accounting for the magnitude of the ADC strain, the SSE can be seen as retrospectively low. 
+Based on the accuracy of the model, it is possible that a similar process could be used to calculate the hook weight, 
+although further investigation would be needed to confirm this hypothesis.
 
 
 
@@ -478,15 +564,190 @@ model able to predict ADC strains with little error. The accuracy of the model i
 %%                       DATABASE STORAGE                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{External Database}
+The scope of the project requires the data collected by the system be stored in an external database. However, this requires a network connection
+and running a wired connection to a PCB on the crane bridge is not feasible. Hence, a wireless connection is needed. The wireless connection must fulfill 
+a list of requirements.
+\begin{itemize}
+    \item Have range sufficient to reach a transmitter from crane bridge
+    \item Have bit rates sufficient for position and mass data
+    \begin{itemize}
+        \item Maximum 6 bytes for position and mass data
+        \item Maximum 3 bytes for crane ID $\rightarrow$ for site-wide roll out
+        \item At 3.5Hz update rate, 1kbps is sufficient
+    \end{itemize}
+    \item Have security options available
+    \item Be cost efficient
+    \item Connectivity independent of external factors
+    \item Low power consumption
+\end{itemize}
+The table below compres the available wireless communication protocols available:
+\begin{center}
+    \begin{table}[H]
+        \begin{adjustbox}{width=1.25\textwidth, center=\textwidth}
+            \small
+            \begin{tabular}{||c c c c c c c||}
+                \hline
+                Protocol & Range & Bit Rate & Security Options & Cost & Independence of External Factors & Power Consumption \\
+                \hline
+                Wi-Fi & 20-40m & 600Mbps & Yes & Low & No & High \\
+                \hline
+                Bluetooth & 10m & 1MBps & Yes & Low & No & High \\
+                \hline
+                ZigBee & 0.01-1km & 250kbps & Yes & Low & No & Low \\
+                \hline
+                Cellular Network & 8-40km & 45k-10Mbps & Yes & High & Yes & High \\
+                \hline
+                LoRaWAN & 2-15km & 0.3k-50kbps & Yes & Low & No & Low \\
+                \hline
+            \end{tabular}
+        \end{adjustbox}
+        \caption{Comparison of Wireless Communication Protocols}
+        \label{tab:wireless_comp}
+    \end{table}
+\end{center}
+Table \ref{tab:wireless_comp} provides valuable information for making an informed decision on which wireless communication protocol to use. 
+While Wi-Fi and Bluetooth offer sufficient bit rates, their limited range and high power consumption make them unsuitable for the intended purpose. 
+Cellular networks, on the other hand, are dependent on providers and come with high costs, making them unfeasible for this project. 
+The remaining options are Zigbee and LoRaWAN. While LoRaWAN offers a greater range, it may be too extensive for the scope of the project. 
+On the other hand, Zigbee's mesh networking feature allows for seamless integration with other positioning systems, making it a highly feasible option. 
+Therefore, based on the available information, Zigbee appears to be the most suitable wireless communication protocol for this project.
+\subsection{ZigBee Communication Test}
 
+The M5Stack Zigbee module (see APPENDIX) offers a simple solution for Zigbee communication. 
+To establish a network, a coordinator module is required to allow multiple end-devices and routers to connect and form a mesh. 
+By connecting a coordinator module to a single-board computer (SBC) located somewhere within the warehouse, multiple end-device modules connected 
+to positioning systems can receive positioning and weight data and push it to an external database. 
+For this to work, the range of the Zigbee module must be sufficient to allow for long-range data transfer throughout the warehouse.
 
+To test the Zigbee communication, an end-device module was used to send the maximum data packet (21 bytes) at a rate of 3.5Hz to the coordinator. 
+The coordinator module was connected to a UART to USB converter, which allowed the data to be read via a host computer. 
+The host computer was stationed in the ASL1 hut, while the end-device was taken to various locations around the site to assess the range of the Zigbee module. 
+The results of the test are presented below:
+
+\begin{center}
+    \begin{table}[H]
+        \begin{adjustbox}{width=1\textwidth, center=\textwidth}
+            \small
+            \begin{tabular}{||c c||}
+                \hline
+                Location & Notes \\
+                \hline
+                Bay 3 Door & Clean data transmission, no lost packets \\
+                \hline
+                Despatch Office & Clean data transmission \\
+                \hline
+                Bay 11 & Clean data transmission \\
+                \hline
+                ASL5 & Clean data transmission \\
+                \hline
+                Outside Exit Hut & Clean data transmission \\
+                \hline
+                Entry Hut & Some lost packets when antenna was facing South \\
+                \hline
+                Inside Offices & Lost packets when antenna facing away from Warehouse \\
+                \hline
+                Coater Rooms & Lost packets \\
+                \hline
+            \end{tabular}
+        \end{adjustbox}
+        \caption{ZigBee Test Range Results}
+        \label{tab:zigbee_test}
+    \end{table}
+\end{center}
+The results demonstrate that, with appropriate antenna placement, Zigbee communication can be achieved seamlessly throughout most of the warehouse, 
+even at the required maximum data transfer rate. It should be noted, however, that the tests were conducted on the 
+ground floor where heavy interference at long range is expected. In the final design, the Zigbee modules will be placed at a 
+higher altitude, resulting in significantly less interference than observed during these tests.
+\subsection{Database Storage}
+The host computer reading the ZigBee modules incoming data will have a network connection made available.
+Storing the incoming data into a SQL database is the most logical option. The following parameters will be stored in the SQL 
+database:
+\begin{itemize}
+    \item Crane ID
+    \item Update Time
+    \item X position
+    \item Y position
+    \item Hook weight
+\end{itemize}
+The user will be easily filter by crane ID, and update time to query the data.
 
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  CRANE 3 IMPLEMENTATION TEST              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Crane 3 Implementation Test}
+With individual subsystems designed and tested, a full trial run with implementation on crane 3 was necessary.
+To simulate working conditions, the trial area was increased as below:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{setup3.png}
+    \caption{21.86m x 45.6m Test Area}
+    \label{fig:setup3}
+\end{figure}
+To expand the test area, spare tags given as part of the SDK were converted into anchors. All these anchors were placed at a height of 5m to allow sufficient
+range between them and the remote tag.
+
+With integration of all 3 subsystems, it was important to upgrade the micrcontroller used. The NucleoL432KC development board was substituted for a STM32L433CT6 microntroller.
+The microntroller has additional I$^2$C, USART, SPI, and ADC ports along with an increased maximum clock frequency (80MHz). The relevant schematic for this test
+is located in Appendix XXX.
+
+The breadboard (containing the circuit) was secured on the crane bridge and the remote tag was connected to the crane trolley. It was important the breadboard was placed relatively
+central along the bridge such that the master tag and remote tag were able to maintain a consistent connection. Connections to power and the crane load gauge was
+left to the on-site electrician.
+\subsection{Positioning}
+Upon first collecting data from the crane, it was noticed that the remote tag was unable to make a connection between the two tags furtherst away.
+Hence, to maintain a consistent connection, a \textit{rolling anchor} selection algorithm was implemented:
+\begin{lstlisting}
+    if y position > 30.4m and y previous position <= 30.4m:
+        disconnect from anchors at y = 0m 
+        connect to anchors at y = 45.6m
+    else if y position <= 30.4m and y previous position > 30.4m:
+        disconnect from anchors at y = 45.6m
+        connect to anchors at y = 0m
+\end{lstlisting}
+Implementing this algorithm and collecting data off the crane for a 5 minute period yields the following result:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{PNGTest3.png}
+    \caption{Full Crane 3 Positioning Test}
+    \label{fig:crane3_test}
+\end{figure}
+Figure \ref{fig:crane3_test} illustrates some expected behavior in the crane's positioning. First, the plot displays several areas with highly concentrated data points, 
+which can be attributed to the crane operator picking up or dropping off coils. Second, data points that indicate crane movement 
+show variances of $\pm0.5$m on the opposite axis of direction. These planes of movement and areas of high concentration correspond with
+the areas on the floor where such motions are expected to occur. The patterns of movement exhibited by the data points begin to outline 
+the layout of the coil rows in the test area. Overall, these features suggest that the positioning system provides highly accurate and precise data.
+More tests were conducted in the same manner which reinforce this result (see APAPPENDIX).
+
+\subsection{Hook Weight}
+To test the hook weight subsystem, the ADC strain data was collected off the crane for known weight values. The data
+for these tests can be found in APPENDIX. Doing a statistical analysis of the data shows the variance in the results
+for each weight class is $>5000$. Considering the sensitivity of the output, these variances are far too high to predict
+the mass with high precision. The results of Section \ref{sec:adc_test} indicate the circuit and corresponding ADC code
+are of a good standard, hence, the logical conclusion is the load gauge signal is not as clean as expected. This however, is out of scope so 
+this can be ignored for now.
+
+By taking the average ADC strains for each mass, a linear regression model can be built to predict mass. The result is listed below:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{regression.png}
+    \caption{Regression Analysis of Hook Weight}
+    \label{fig:regr_hook}
+\end{figure}
+The result of Figure \ref{fig:regr_hook} describes a linear regression model described by its predictive function:
+\begin{center}
+    $y=0.002159x-1.26$ (T)
+\end{center}
+
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                       FINAL DESIGN                        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Final Design}
+
+
 
 
 
@@ -547,7 +808,12 @@ https://docs.pozyx.io/creator/
 
 
 
-
+\begin{table}[htbp][H]
+    \centering
+    \csvautotabular{Images/0000.csv}
+    \caption{0T Weight Test}
+    \label{tab:0_test}
+\end{table}
 
 
 \end{document}
