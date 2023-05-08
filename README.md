@@ -4,6 +4,13 @@ Functioning prototype for Bluescope Acacia Ridge to assist in auditing the trave
 # Author
 Ryan Lederhose
 
+# Functionality
+* 2-axis positioning through ultra-wideband two-way ranging
+* Hook weight calculation through ADC and linear regression model
+* Floor location detection via kNN model
+* External database storage through ZigBee wireless connection
+This (https://www.pozyx.io/creator-one-kit)
+
 # File Layout
     .
     |Overhead-Crane-Real-Time-Location-System/
