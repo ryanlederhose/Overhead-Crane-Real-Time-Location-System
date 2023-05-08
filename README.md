@@ -9,7 +9,9 @@ Ryan Lederhose
 * Hook weight calculation through ADC and linear regression model
 * Floor location detection via kNN model
 * External database storage through ZigBee wireless connection
-This (https://www.pozyx.io/creator-one-kit)
+
+This prototype is based on the Pozyx Creator One Kit (https://www.pozyx.io/creator-one-kit). The embedded code is built on the 
+STM32L433CCT6 microcontroller.
 
 # File Layout
     .
