@@ -17,7 +17,8 @@ STM32L433CCT6 microcontroller.
 schematics, etc.
 
 # Build Instructions
-1. Clone the repository using ```bash
+1. Clone the repository using
+```bash
 fdsfds
 ```
 
