@@ -19,7 +19,6 @@ schematics, etc.
 # Build Instructions
 1. Clone the repository using
 ```bash
-fdsfds
+git clone https://github.com/ryanlederhose/Overhead-Crane-Real-Time-Location-System.git
 ```
-
-Please see the seperate 'Embedded STM32' build instructions for the microntroller, and 'Host PC' build instructions for the host PC
+2. Please see the seperate 'Embedded STM32' build instructions for the microntroller, and 'Host PC' build instructions for the host PC
