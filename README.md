@@ -17,7 +17,8 @@ STM32L433CCT6 microcontroller.
 schematics, etc.
 
 # Build Instructions
-1. Clone the repository using ```shell
-fdsfds```
+1. Clone the repository using ```bash
+fdsfds
+```
 
 Please see the seperate 'Embedded STM32' build instructions for the microntroller, and 'Host PC' build instructions for the host PC
