@@ -21,10 +21,10 @@ import pymssql as sql
 import pandas as pd
 
 # Global constants
-SERVER = "CLASSIFIED"
-USER = "CLASSIFIED"
-PASSWORD = "CLASSIFIED"
-DATABASE = "CLASSIFIED"
+SERVER = "134.18.61.230"
+USER = "crane_3_user"
+PASSWORD = "crane_3_user*"
+DATABASE = "crane_location_system"
 
 REGRESSION = 1
 CLASSIFICATION = 2
@@ -223,15 +223,19 @@ class SerialReader(object):
 
                 # Extract variables from message
                 for i in range(len(dataList)):
-                    if (dataList[i])[0] == '\x16':
-                        craneID = (dataList[i])[2:3:]
-                    elif (dataList[i])[0] == 'm':
+                    # if (dataList[i])[0] == '\x16':
+                    #     craneID = (dataList[i])[2:3:]
+                    if (dataList[i])[0] == 'm':
                         rawAdc = (dataList[i])[1::]
                     elif (dataList[i])[0] == 'x':
                         posX = (dataList[i])[1::]
                     elif (dataList[i])[0] == 'y':
                         posY = (dataList[i])[1::]
                     else:
+                        for j in range(len(dataList[i])):
+                            if dataList[i][j] == 'i':
+                                craneID = (dataList[i])[j + 1]
+                                pass
                         continue
 
                 rxBuffer = ""
