@@ -12,11 +12,13 @@ from ZigBee module
 
 # Build Instructions
 1. Ensure python3 is installed on host pc
-2. Run the command from home directory
+2. From the from home directory
 ```bash
-python3 'Host PC'/embedded.py
+cd 'Host PC'
+python3 embedded.py
 ```
 or alternatively to collect training data for weight
 ```bash
-python3 'Host PC'/embedded.py --training --mass -f [file-name].csv
+cd 'Host PC'
+python3 embedded.py --training --mass -f [file-name].csv
 ```
