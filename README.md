@@ -6,12 +6,14 @@ Functioning prototype for Bluescope Acacia Ridge to assist in auditing the trave
 # Author
 Ryan Lederhose
 
-![alt text](https://media.licdn.com/dms/image/D4E03AQHmpBb2oYg8dQ/profile-displayphoto-shrink_100_100/0/1684370476814?e=1692835200&v=beta&t=NmVOVQkqLnGjUX6LbNndaAuaY1erydQMihyx6VheiuE)
-
 # Functionality
 * 2-axis positioning through ultra-wideband two-way ranging
 * Hook weight calculation through ADC and linear regression model
 * External database storage through ZigBee wireless connection
+
+
+https://github.com/ryanlederhose/Overhead-Crane-Real-Time-Location-System/assets/112144274/d8b95483-c45d-4638-85e9-6efbddddd37b
+
 
 This prototype is based on the Pozyx Creator One Kit (https://www.pozyx.io/creator-one-kit). The embedded code is built on the 
 STM32L433CCT6 microcontroller.
