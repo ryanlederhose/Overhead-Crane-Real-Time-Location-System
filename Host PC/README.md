@@ -2,6 +2,8 @@
 The code in this folder is intended to run on a host PC connected to
 the Seeed Studio XIAO SAMD21.
 
+<img src="../pc-photo.jpg" alt="drawing" width="500"/>
+
 # Description
 * Reads incoming serial messages from SAMD21 containing data packets
 from ZigBee module
