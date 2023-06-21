@@ -18,10 +18,6 @@ STM32L433CCT6 microcontroller.
 
 ![alt text](https://assets-global.website-files.com/612f4c781c90a5752d371287/63760fd861d895221d8a1243_Creator%20One%20kit-p-1080.webp)
 
-# Documentation
-'RTLS Documentation.pdf' provides a full description and layout of the prototype. The 'Resources' folder provides all necessary
-schematics, etc.
-
 # File Description
 * Documentation contains all necessary documents for the prototype
 * Embedded STM32 contains code intended to run on the STM32 microcontroller
