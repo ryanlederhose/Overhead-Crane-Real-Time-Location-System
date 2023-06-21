@@ -27,10 +27,10 @@ def main():
     baudrate = 0
     database = ""
 
-    server = "134.18.61.230"
-    user = "crane_3_user"
-    password = "crane_3_user*"
-    database = "crane_location_system"
+    server = ""
+    user = ""
+    password = ""
+    database = ""
 
     for i in range(len(sys.argv)):
         if sys.argv[i] == '-b':
