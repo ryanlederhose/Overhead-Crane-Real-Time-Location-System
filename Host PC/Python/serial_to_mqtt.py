@@ -48,14 +48,14 @@ def main():
                             transport="tcp")
     
     #Set password for mqtt
-    client.username_pw_set(username="ryan", password="ryan")
+    client.username_pw_set(username="", password="")
 
     #Set callbacks for connect and publish
     client.on_connect = on_connect
     client.on_publish = on_publish
 
     #Connect to mqtt broker
-    client.connect(host="acavcon01.otbsl.com", port = 1883, keepalive=10)
+    client.connect(host="", port = 1883, keepalive=10)
 
     #Start client loop 
     client.loop_start()
