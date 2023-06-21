@@ -21,10 +21,10 @@ import pymssql as sql
 import pandas as pd
 
 # Global constants
-SERVER = "134.18.61.230"
-USER = "crane_3_user"
-PASSWORD = "crane_3_user*"
-DATABASE = "crane_location_system"
+SERVER = "CLASSIFIED"
+USER = "CLASSIFIED"
+PASSWORD = "CLASSIFIED"
+DATABASE = "CLASSIFIED"
 
 REGRESSION = 1
 CLASSIFICATION = 2
