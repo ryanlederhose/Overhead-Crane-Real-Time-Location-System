@@ -31,8 +31,8 @@
  *  @return HAL status of the communication process
  */
 HAL_StatusTypeDef I2C_Send_Function_Call(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress,
-		uint16_t MemAddSize, uint8_t *txData, uint16_t txSize,
-		uint8_t *rxData, uint16_t rxSize, uint32_t Timeout);
+										 uint16_t MemAddSize, uint8_t *txData, uint16_t txSize,
+										 uint8_t *rxData, uint16_t rxSize, uint32_t Timeout);
 
 /** Write a given data buffer to a specified register
  *  @param hi2c pointer to i2c handle
@@ -42,7 +42,7 @@ HAL_StatusTypeDef I2C_Send_Function_Call(I2C_HandleTypeDef *hi2c, uint16_t DevAd
  *  @return HAL status of i2c communication
  */
 HAL_StatusTypeDef I2C_Write_Reg(I2C_HandleTypeDef *hi2c, uint16_t MemAddress,
-		uint8_t *txData, uint16_t txSize);
+								uint8_t *txData, uint16_t txSize);
 
 /** Read a specified register to a given data buffer
  *  @param hi2c pointer to i2c handle
@@ -52,6 +52,6 @@ HAL_StatusTypeDef I2C_Write_Reg(I2C_HandleTypeDef *hi2c, uint16_t MemAddress,
  *  @return HAL status of i2c communication
  */
 HAL_StatusTypeDef I2C_Read_Reg(I2C_HandleTypeDef *hi2c, uint16_t MemAddress,
-		uint8_t *rxData, uint16_t rxSize);
+							   uint8_t *rxData, uint16_t rxSize);
 
 #endif /* INC_I2C_H_ */

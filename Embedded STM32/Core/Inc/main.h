@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -23,34 +23,38 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-typedef struct __attribute__((packed))_deviceCoords {
-	uint16_t networkID;
-	uint8_t flag;
-	int32_t posX;
-	int32_t posY;
-	int32_t posZ;
-} deviceCoords_t;
+  /* Private includes ----------------------------------------------------------*/
+  /* USER CODE BEGIN Includes */
+  typedef struct __attribute__((packed)) _deviceCoords
+  {
+    uint16_t networkID;
+    uint8_t flag;
+    int32_t posX;
+    int32_t posY;
+    int32_t posZ;
+  } deviceCoords_t;
 
-typedef struct __attribute__((packed))_coordinates {
-	int32_t posX;
-	int32_t posY;
-	int32_t posZ;
-} coordinates_t;
+  typedef struct __attribute__((packed)) _coordinates
+  {
+    int32_t posX;
+    int32_t posY;
+    int32_t posZ;
+  } coordinates_t;
 
-typedef struct __attribute__((packed))_calibration {
-	uint16_t anchorID1;
-	uint16_t anchorID2;
-	uint16_t anchorID3;
-	uint16_t anchorID4;
-} calibration_t;
+  typedef struct __attribute__((packed)) _calibration
+  {
+    uint16_t anchorID1;
+    uint16_t anchorID2;
+    uint16_t anchorID3;
+    uint16_t anchorID4;
+  } calibration_t;
 
 #include "string.h"
 #include "stdio.h"
@@ -93,9 +97,9 @@ typedef struct __attribute__((packed))_calibration {
 #define INT_PORT GPIOA
 #define INT_PIN GPIO_PIN_3
 
-#define BYTE_SIZE_1 sizeof (uint8_t)
-#define BYTE_SIZE_2 sizeof (uint8_t) * 2
-#define BYTE_SIZE_3 sizeof (uint8_t) * 3
+#define BYTE_SIZE_1 sizeof(uint8_t)
+#define BYTE_SIZE_2 sizeof(uint8_t) * 2
+#define BYTE_SIZE_3 sizeof(uint8_t) * 3
 
 #define DIMENSION POZYX_2_5D
 
@@ -108,19 +112,19 @@ typedef struct __attribute__((packed))_calibration {
 #define MAX_DISTANCE_TRAVELLED 2000
 
 #define CRANE_ID 3
-/* USER CODE END EM */
+  /* USER CODE END EM */
 
-/* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+  /* Exported functions prototypes ---------------------------------------------*/
+  void Error_Handler(void);
 
-/* USER CODE BEGIN EFP */
+  /* USER CODE BEGIN EFP */
 
-/* USER CODE END EFP */
+  /* USER CODE END EFP */
 
-/* Private defines -----------------------------------------------------------*/
-/* USER CODE BEGIN Private defines */
+  /* Private defines -----------------------------------------------------------*/
+  /* USER CODE BEGIN Private defines */
 
-/* USER CODE END Private defines */
+  /* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

@@ -62,7 +62,7 @@ HAL_StatusTypeDef Read_Rx_Buffer(I2C_HandleTypeDef *hi2c, uint8_t *rxData, uint1
  *  @param rxSize size of data to read in to
  */
 int Remote_Function_Call_Read(I2C_HandleTypeDef *hi2c, uint16_t networkAddr, uint16_t MemAddress,
-		uint8_t *txData, uint16_t txSize, uint8_t *rxData, uint16_t rxSize);
+							  uint8_t *txData, uint16_t txSize, uint8_t *rxData, uint16_t rxSize);
 
 /** Send a read request to a remote tag specified by the network address. Subsequently read the received
  *  buffer populated with the data of the requested read register on the remote tag
@@ -74,7 +74,7 @@ int Remote_Function_Call_Read(I2C_HandleTypeDef *hi2c, uint16_t networkAddr, uin
  *  @param regSize register size to read
  */
 int Remote_Read_Reg_Read(I2C_HandleTypeDef *hi2c, uint16_t networkAddr, uint16_t MemAddress,
-		uint8_t *rxData, uint16_t rxSize, uint16_t regSize);
+						 uint8_t *rxData, uint16_t rxSize, uint16_t regSize);
 
 /** Remotely connect to a tag at the specified network address and perform a write to the given
  *  register specified by the memory address. Subsequently read the Rx buffer populated from UWB
@@ -87,7 +87,7 @@ int Remote_Read_Reg_Read(I2C_HandleTypeDef *hi2c, uint16_t networkAddr, uint16_t
  *  @param rxSize size of data to read in to
  */
 int Remote_Write_Reg_Read(I2C_HandleTypeDef *hi2c, uint16_t networkAddr, uint16_t MemAddress,
-		uint8_t *txData, uint16_t txSize, uint8_t *rxData, uint16_t rxSize);
+						  uint8_t *txData, uint16_t txSize, uint8_t *rxData, uint16_t rxSize);
 
 /** Initialise a remote tag for positioning
  *  @param hi2c pointer to a i2c handle
