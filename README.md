@@ -12,6 +12,8 @@ Ryan Lederhose
 This prototype is based on the Pozyx Creator One Kit (https://www.pozyx.io/creator-one-kit). The embedded code is built on the 
 STM32L433CCT6 microcontroller.
 
+![alt text](https://assets-global.website-files.com/612f4c781c90a5752d371287/63760fd861d895221d8a1243_Creator%20One%20kit-p-1080.webp)
+
 # Documentation
 'RTLS Documentation.pdf' provides a full description and layout of the prototype. The 'Resources' folder provides all necessary
 schematics, etc.
