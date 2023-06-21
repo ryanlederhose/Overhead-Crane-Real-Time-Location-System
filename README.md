@@ -16,6 +16,12 @@ STM32L433CCT6 microcontroller.
 'RTLS Documentation.pdf' provides a full description and layout of the prototype. The 'Resources' folder provides all necessary
 schematics, etc.
 
+# File Description
+* Documentation contains all necessary documents for the prototype
+* Embedded STM32 contains code intended to run on the STM32 microcontroller
+* Host PC contains code intended to run on a host PC
+* Test Results contains data from the testing phase of production
+  
 # Build Instructions
 1. Clone the repository using
 ```bash
