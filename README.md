@@ -6,6 +6,8 @@ Functioning prototype for Bluescope Acacia Ridge to assist in auditing the trave
 # Author
 Ryan Lederhose
 
+![alt text](https://media.licdn.com/dms/image/D4E03AQHmpBb2oYg8dQ/profile-displayphoto-shrink_100_100/0/1684370476814?e=1692835200&v=beta&t=NmVOVQkqLnGjUX6LbNndaAuaY1erydQMihyx6VheiuE)
+
 # Functionality
 * 2-axis positioning through ultra-wideband two-way ranging
 * Hook weight calculation through ADC and linear regression model
