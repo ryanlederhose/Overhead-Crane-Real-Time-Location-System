@@ -9,14 +9,13 @@ Ryan Lederhose
 * Hook weight calculation through ADC and linear regression model
 * External database storage through ZigBee wireless connection
 
-
-https://github.com/ryanlederhose/Overhead-Crane-Real-Time-Location-System/assets/112144274/d8b95483-c45d-4638-85e9-6efbddddd37b
+https://github.com/ryanlederhose/Overhead-Crane-Real-Time-Location-System/assets/112144274/8b0b4897-9c23-4334-9466-ac720546a4e4
 
 
 This prototype is based on the Pozyx Creator One Kit (https://www.pozyx.io/creator-one-kit). The embedded code is built on the 
 STM32L433CCT6 microcontroller.
 
-https://github.com/ryanlederhose/Overhead-Crane-Real-Time-Location-System/assets/112144274/8b0b4897-9c23-4334-9466-ac720546a4e4
+![alt text](https://assets-global.website-files.com/612f4c781c90a5752d371287/63760fd861d895221d8a1243_Creator%20One%20kit-p-1080.webp)
 
 # File Description
 * Documentation contains all necessary documents for the prototype
